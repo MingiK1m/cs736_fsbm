@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
@@ -41,7 +42,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 	}
 	TIMER_END();
 
-	printf("Create(Open)/Write. %ld sec, %ld usec\n", TIMER_ELAPSE_SEC(), TIMER_ELAPSE_USEC());
+	printf("Create(Open)/Write.\t %ld sec, %ld usec\n", TIMER_ELAPSE_SEC(), TIMER_ELAPSE_USEC());
 
 	/*** Second phase ***/
 	TIMER_START();
@@ -52,7 +53,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 	}
 	TIMER_END();
 
-	printf("2. %ld sec, %ld usec\n", TIMER_ELAPSE_SEC(), TIMER_ELAPSE_USEC());
+	printf("Seqeuntial Read.\t %ld sec, %ld usec\n", TIMER_ELAPSE_SEC(), TIMER_ELAPSE_USEC());
 
 	/*** Third phase ***/
 
@@ -64,5 +65,5 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 
 	TIMER_END();
 
-	printf("4. %ld sec, %ld usec\n", TIMER_ELAPSE_SEC(), TIMER_ELAPSE_USEC());
+	printf("Unlink file.\t %ld sec, %ld usec\n", TIMER_ELAPSE_SEC(), TIMER_ELAPSE_USEC());
 }
