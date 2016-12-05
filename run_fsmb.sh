@@ -5,7 +5,7 @@ large(){
 	for size in 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288 1048576
 	do
 		echo "$size byte blocksize largefile benchmark"
-		./fs_microbenchmark large $size large_file$size_ 10
+		./fs_microbenchmark large $size large_file$size_ 1000
 	done
 }
 
@@ -13,7 +13,7 @@ small(){
 	for size in 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288 1048576
 	do
 		echo "$size byte filesize smallfile benchmark"
-		./fs_microbenchmark small $size small_file$size_ 1
+		./fs_microbenchmark small $size small_file$size_ 1000
 	done
 }
 
