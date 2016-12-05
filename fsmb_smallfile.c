@@ -59,7 +59,7 @@ void fsmb_smallfile_benchmark(const char * filepath, long block_size, int count)
 		/*** Second phase ***/
 		TIMER_START();
 		for (int i = 0; i < FILE_COUNT; i++) {
-			sprintf(filepath_r, "%s%d", filepath, i);
+			sprintf(filepath_r, "%s%d_%d", filepath, cnt, i);
 
 			fd = open(filepath_r, O_RDONLY, 0);
 			if (fd < 0) {
@@ -90,7 +90,7 @@ void fsmb_smallfile_benchmark(const char * filepath, long block_size, int count)
 		/*** Third phase ***/
 		TIMER_START();
 		for (int i = 0; i < FILE_COUNT; i++) {
-			sprintf(filepath_r, "%s%d", filepath, i);
+			sprintf(filepath_r, "%s%d_%d", filepath, cnt, i);
 
 			unlink(filepath_r);
 		}
