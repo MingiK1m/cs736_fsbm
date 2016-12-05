@@ -12,9 +12,10 @@ void main(int argc, const char * argv[]){
 	/* 1. argument parse phase */
 	int option;		// large or small
 	int block_size;	// byte unit
+	int iter_count;
 
-	if(argc != 4){
-		printf("Usage: fsmb [large|small] block_byte_size filepath\n");
+	if(argc != 5){
+		printf("Usage: fsmb [large|small] block_byte_size filepath iteration\n");
 		exit(1);
 	}
 
@@ -23,22 +24,25 @@ void main(int argc, const char * argv[]){
 	} else if (strcmp(argv[1], "small") == 0){
 		option = FSMB_TYPE_SMALL_FILE;
 	} else {
-		printf("Wrong option (use large or small)\nUsage: fsmb [large|small] block_byte_size filepath\n");
+		printf("Wrong option (use large or small)\nUsage: fsmb [large|small] block_byte_size filepath iteration\n");
 		exit(1);
 	}
 
 	block_size = atoi(argv[2]);
 	if(block_size == 0){
-		printf("Wrong block size\nUsage: fsmb [large|small] block_byte_size filepath\n");
+		printf("Wrong block size\nUsage: fsmb [large|small] block_byte_size filepath iteration\n");
 		exit(1);
 	}
 
 	// argv[3] is filepath
 
+	iter_count = atoi(argv[4]);
+
+
 	/* 2. execute microbenchmark phase */
 	if(option == FSMB_TYPE_LARGE_FILE){
-		fsmb_largefile_benchmark(argv[3], block_size, 1 /* not yet */);
-	} else if (option == FSMB_TYPE_LARGE_FILE){
-
+		fsmb_largefile_benchmark(argv[3], block_size, iter_count);
+	} else if (option == FSMB_TYPE_SMALL_FILE){
+		fsmb_smallfile_benchmark(argv[3], block_size, iter_count);
 	}
 }
