@@ -103,6 +103,13 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		printf("%ld.%06ld \t", sec, usec);
 
 		/*** Second phase ***/
+		//rewind file pointer
+		ret = lseek(fd, 0, SEEK_SET);
+		if(ret<0){
+			perror("failed to lseek");
+			exit(1);
+		}
+
 		TIMER_START();
 		read_file_size = 0;
 		while (tot_file_size > read_file_size) {
