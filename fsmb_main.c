@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "fsmb_largefile.h"
 #include "fsmb_smallfile.h"
 
