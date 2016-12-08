@@ -16,12 +16,16 @@
  */
 
 void fsmb_smallfile_benchmark(const char * filepath, long block_size, int count){
-    int fd, ret_size;
-    char buf[BUF_SIZE] = {0,};
-    char filepath_r[1024] = "";
-    long int sec, usec;
+	int fd, ret_size;
+	char buf[BUF_SIZE] = {0,};
+	char filepath_r[1024] = "";
+	long int sec, usec;
 
-    printf("micro benchmarking for lots of small files RW\n");
+	for(int i=0;i<BUF_SIZE;i++){
+		buf[i] = i % 2;
+	}
+
+	printf("micro benchmarking for lots of small files RW\n");
 
 	for (int cnt = 0; cnt < count; cnt++) {
 		/*** First phase ***/
@@ -42,6 +46,7 @@ void fsmb_smallfile_benchmark(const char * filepath, long block_size, int count)
 				exit(1);
 			}
 
+			fsync(fd);
 			close(fd);
 		}
 		TIMER_END();

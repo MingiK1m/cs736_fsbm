@@ -32,16 +32,19 @@ unsigned long long ulrand(){
 void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 	int fd, wrt_size, rd_size, ret;
 	char buf[BUF_SIZE] = {0,};
-    char filepath_r[1024] = "";
+	char filepath_r[1024] = "";
 	unsigned long long tot_file_size, read_file_size, tmp;
 	long int sec, usec;
 	unsigned long long *rand_seq;
 	int block_count = LARGE_FILE_SIZE/block_size;
 
 	rand_seq = (unsigned long long*)malloc(block_count * sizeof(unsigned long long));
+	for(int i=0;i<BUF_SIZE;i++){
+		buf[i] = i % 2;
+	}
 
-    printf("micro benchmarking for one big file RW\n");
-    printf("Opn/Seq Wrt | Seq Read | Ran Read | Ran Wrt | Del\n");
+	printf("micro benchmarking for one big file RW\n");
+	printf("Opn/Seq Wrt | Seq Read | Ran Read | Ran Wrt | Del\n");
 
 	for (int iter = 0; iter < count; iter++) {
 		/*** Rand value set ***/
@@ -85,6 +88,8 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			}
 			tot_file_size += wrt_size;
 		}
+
+		fsync(fd);
 		TIMER_END();
 
 		usec = TIMER_ELAPSE_USEC();
@@ -163,6 +168,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 				exit(1);
 			}
 		}
+		fsync(fd);
 
 		TIMER_END();
 
