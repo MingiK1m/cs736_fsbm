@@ -100,7 +100,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		/*** Second phase ***/
 		TIMER_START();
 		read_file_size = 0;
-		while (tot_file_size < read_file_size) {
+		while (tot_file_size > read_file_size) {
 			rd_size = read(fd, buf, block_size);
 			if(rd_size != block_size){
 				printf("failed to read a whole block\n");
