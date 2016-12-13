@@ -7,6 +7,9 @@
 #include "fsmb_smallfile.h"
 #include "time_util.h"
 
+#define BUF_SIZE 1024*1024 // 1mb
+#define FILE_COUNT 1000 // 1k iteration
+
 /*
  * Design
  * 1. Create/open 10,000 files, write 1 block and close
@@ -19,7 +22,6 @@ void fsmb_smallfile_benchmark(const char * filepath, long block_size, int count)
 	int fd, ret_size;
 	char buf[BUF_SIZE] = {0,};
 	char filepath_r[1024] = "";
-	long int sec, usec;
 
 	for(int i=0;i<BUF_SIZE;i++){
 		buf[i] = i % 2;

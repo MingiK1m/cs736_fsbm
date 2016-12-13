@@ -11,5 +11,6 @@
 struct timeval tv_start;
 struct timeval tv_end;
 
+long int sec, usec;
 
 #endif /* __TIME_UTIL_H__ */

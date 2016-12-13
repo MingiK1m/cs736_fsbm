@@ -7,6 +7,9 @@
 #include "fsmb_largefile.h"
 #include "time_util.h"
 
+#define BUF_SIZE 1024*1024 // 1MB, because the maximum size of block unit is 1MB
+#define LARGE_FILE_SIZE 1024*1024*1024 // 1GB, TODO: TBD
+
 /*
  * Largefile microbenchmark Design
  *
@@ -34,7 +37,6 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 	char buf[BUF_SIZE] = {0,};
 	char filepath_r[1024] = "";
 	unsigned long long tot_file_size, read_file_size, tmp;
-	long int sec, usec;
 	unsigned long long *rand_seq;
 	int block_count = LARGE_FILE_SIZE/block_size;
 
@@ -84,6 +86,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			wrt_size = write(fd, buf, block_size);
 			if(wrt_size != block_size){
 				printf("failed to write a whole block\n");
+				free(rand_seq);
 				exit(1);
 			}
 			tot_file_size += wrt_size;
@@ -107,6 +110,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		ret = lseek(fd, 0, SEEK_SET);
 		if(ret<0){
 			perror("failed to lseek");
+			free(rand_seq);
 			exit(1);
 		}
 
@@ -116,6 +120,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			rd_size = read(fd, buf, block_size);
 			if(rd_size != block_size){
 				printf("failed to read a whole block\n");
+				free(rand_seq);
 				exit(1);
 			}
 			read_file_size += rd_size;
@@ -139,11 +144,13 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			ret = lseek(fd, rand_seq[i]*block_size, SEEK_SET);
 			if(ret<0){
 				perror("failed to lseek");
+				free(rand_seq);
 				exit(1);
 			}
 			rd_size = read(fd, buf, block_size);
 			if(rd_size != block_size){
 				printf("failed to read a whole block\n");
+				free(rand_seq);
 				exit(1);
 			}
 		}
@@ -167,11 +174,13 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			ret = lseek(fd, rand_seq[i]*block_size, SEEK_SET);
 			if(ret<0){
 				perror("failed to lseek");
+				free(rand_seq);
 				exit(1);
 			}
 			wrt_size = write(fd, buf, block_size);
 			if(wrt_size != block_size){
 				printf("failed to write a whole block\n");
+				free(rand_seq);
 				exit(1);
 			}
 		}
