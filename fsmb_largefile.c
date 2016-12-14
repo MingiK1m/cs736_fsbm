@@ -95,15 +95,15 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		fsync(fd);
 		TIMER_END();
 
-		usec = TIMER_ELAPSE_USEC();
+		nsec = TIMER_ELAPSE_NSEC();
 		sec = TIMER_ELAPSE_SEC();
 
-		if (usec < 0) {
-			usec = 1000000 + usec;
+		if (nsec < 0) {
+			nsec = 1000000000 + nsec;
 			sec--;
 		}
 
-		printf("%ld.%06ld \t", sec, usec);
+		printf("%ld.%09ld \t", sec, nsec);
 
 		/*** Second phase ***/
 		//rewind file pointer
@@ -127,15 +127,15 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		}
 		TIMER_END();
 
-		usec = TIMER_ELAPSE_USEC();
+		nsec = TIMER_ELAPSE_NSEC();
 		sec = TIMER_ELAPSE_SEC();
 
-		if (usec < 0) {
-			usec = 1000000 + usec;
+		if (nsec < 0) {
+			nsec = 1000000000 + nsec;
 			sec--;
 		}
 
-		printf("%ld.%06ld \t", sec, usec);
+		printf("%ld.%09ld \t", sec, nsec);
 
 		/*** Third phase ***/
 		TIMER_START();
@@ -157,15 +157,15 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 
 		TIMER_END();
 
-		usec = TIMER_ELAPSE_USEC();
+		nsec = TIMER_ELAPSE_NSEC();
 		sec = TIMER_ELAPSE_SEC();
 
-		if (usec < 0) {
-			usec = 1000000 + usec;
+		if (nsec < 0) {
+			nsec = 1000000000 + nsec;
 			sec--;
 		}
 
-		printf("%ld.%06ld \t", sec, usec);
+		printf("%ld.%09ld \t", sec, nsec);
 
 		/*** Fourth phase ***/
 		TIMER_START();
@@ -188,15 +188,15 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 
 		TIMER_END();
 
-		usec = TIMER_ELAPSE_USEC();
+		nsec = TIMER_ELAPSE_NSEC();
 		sec = TIMER_ELAPSE_SEC();
 
-		if (usec < 0) {
-			usec = 1000000 + usec;
+		if (nsec < 0) {
+			nsec = 1000000000 + nsec;
 			sec--;
 		}
 
-		printf("%ld.%06ld \t", sec, usec);
+		printf("%ld.%09ld \t", sec, nsec);
 
 		/*** Fifth phase ***/
 		TIMER_START();
@@ -204,15 +204,15 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 
 		TIMER_END();
 
-		usec = TIMER_ELAPSE_USEC();
+		nsec = TIMER_ELAPSE_NSEC();
 		sec = TIMER_ELAPSE_SEC();
 
-		if (usec < 0) {
-			usec = 1000000 + usec;
+		if (nsec < 0) {
+			nsec = 1000000000 + nsec;
 			sec--;
 		}
 
-		printf("%ld.%06ld \n", sec, usec);
+		printf("%ld.%09ld \n", sec, nsec);
 	}
 
 	free(rand_seq);

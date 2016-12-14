@@ -1,16 +1,17 @@
 #ifndef __TIME_UTIL_H__
 #define __TIME_UTIL_H__
 
-#include <sys/time.h>
+#include <time.h>
+#include <assert.h>
 
-#define TIMER_START() gettimeofday(&tv_start, 0)
-#define TIMER_END() gettimeofday(&tv_end, 0)
-#define TIMER_ELAPSE_SEC() (tv_end.tv_sec - tv_start.tv_sec)
-#define TIMER_ELAPSE_USEC() (tv_end.tv_usec - tv_start.tv_usec)
+#define TIMER_START() assert(clock_gettime( CLOCK_REALTIME, &ts_start)==0)
+#define TIMER_END() assert(clock_gettime( CLOCK_REALTIME, &ts_end)==0)
+#define TIMER_ELAPSE_SEC() (ts_end.tv_sec - ts_start.tv_sec)
+#define TIMER_ELAPSE_NSEC() (ts_end.tv_nsec - ts_start.tv_nsec)
 
-struct timeval tv_start;
-struct timeval tv_end;
+struct timespec ts_start;
+struct timespec ts_end;
 
-long int sec, usec;
+long int sec, nsec;
 
 #endif /* __TIME_UTIL_H__ */
