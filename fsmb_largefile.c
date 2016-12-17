@@ -9,6 +9,7 @@
 
 #define BUF_SIZE 1024*1024 // 1MB, because the maximum size of block unit is 1MB
 #define LARGE_FILE_SIZE 1024*1024*1024 // 1GB, TODO: TBD
+#define STR_BUF_SIZE 1024
 
 /*
  * Largefile microbenchmark Design
@@ -32,21 +33,26 @@ unsigned long long ulrand(){
 	return ret & 0xFFFFFFFFFFFFFFFFULL;
 }
 
-void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
-	int fd, wrt_size, rd_size, ret;
+void fsmb_largefile_benchmark(const char * filepath, int block_size, int count, const char * log_filename){
+	int fd, wrt_size, rd_size, ret, str_len;
 	char buf[BUF_SIZE] = {0,};
+	char str_buf[STR_BUF_SIZE];
 	char filepath_r[1024] = "";
 	unsigned long long tot_file_size, read_file_size, tmp;
 	unsigned long long *rand_seq;
 	int block_count = LARGE_FILE_SIZE/block_size;
 
+	long int* elapse_time_ary[5][2]; // To save sec dif and nsec dif
+
+	for (int i=0;i<5;i++){
+		elapse_time_ary[i][0] = (long int*)malloc(sizeof(long int)*count);
+		elapse_time_ary[i][1] = (long int*)malloc(sizeof(long int)*count);	
+	}
+
 	rand_seq = (unsigned long long*)malloc(block_count * sizeof(unsigned long long));
 	for(int i=0;i<BUF_SIZE;i++){
 		buf[i] = i % 2;
 	}
-
-	printf("micro benchmarking for one big file RW\n");
-	printf("Opn/Seq Wrt | Seq Read | Ran Read | Ran Wrt | Del\n");
 
 	for (int iter = 0; iter < count; iter++) {
 		/*** Rand value set ***/
@@ -85,7 +91,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			//TODO: check size of written bytes
 			wrt_size = write(fd, buf, block_size);
 			if(wrt_size != block_size){
-				printf("failed to write a whole block\n");
+				perror("failed to write a whole block\n");
 				free(rand_seq);
 				exit(1);
 			}
@@ -93,6 +99,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		}
 
 		fsync(fd);
+
 		TIMER_END();
 
 		nsec = TIMER_ELAPSE_NSEC();
@@ -103,7 +110,8 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			sec--;
 		}
 
-		printf("%ld.%09ld \t", sec, nsec);
+		elapse_time_ary[0][0][iter] = sec;
+		elapse_time_ary[0][1][iter] = nsec;
 
 		/*** Second phase ***/
 		//rewind file pointer
@@ -119,7 +127,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 		while (tot_file_size > read_file_size) {
 			rd_size = read(fd, buf, block_size);
 			if(rd_size != block_size){
-				printf("failed to read a whole block\n");
+				perror("failed to read a whole block\n");
 				free(rand_seq);
 				exit(1);
 			}
@@ -135,7 +143,8 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			sec--;
 		}
 
-		printf("%ld.%09ld \t", sec, nsec);
+		elapse_time_ary[1][0][iter] = sec;
+		elapse_time_ary[1][1][iter] = nsec;
 
 		/*** Third phase ***/
 		TIMER_START();
@@ -149,7 +158,7 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			}
 			rd_size = read(fd, buf, block_size);
 			if(rd_size != block_size){
-				printf("failed to read a whole block\n");
+				perror("failed to read a whole block\n");
 				free(rand_seq);
 				exit(1);
 			}
@@ -165,7 +174,8 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			sec--;
 		}
 
-		printf("%ld.%09ld \t", sec, nsec);
+		elapse_time_ary[2][0][iter] = sec;
+		elapse_time_ary[2][1][iter] = nsec;
 
 		/*** Fourth phase ***/
 		TIMER_START();
@@ -179,11 +189,12 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			}
 			wrt_size = write(fd, buf, block_size);
 			if(wrt_size != block_size){
-				printf("failed to write a whole block\n");
+				perror("failed to write a whole block\n");
 				free(rand_seq);
 				exit(1);
 			}
 		}
+
 		fsync(fd);
 
 		TIMER_END();
@@ -196,7 +207,8 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			sec--;
 		}
 
-		printf("%ld.%09ld \t", sec, nsec);
+		elapse_time_ary[3][0][iter] = sec;
+		elapse_time_ary[3][1][iter] = nsec;
 
 		/*** Fifth phase ***/
 		TIMER_START();
@@ -212,8 +224,45 @@ void fsmb_largefile_benchmark(const char * filepath, int block_size, int count){
 			sec--;
 		}
 
-		printf("%ld.%09ld \n", sec, nsec);
+		elapse_time_ary[4][0][iter] = sec;
+		elapse_time_ary[4][1][iter] = nsec;
 	}
 
+	fd = open(log_filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
+	if (fd < 0) {
+		perror("Failed to make a log file\n");
+		exit(1);
+	}
+
+	str_len = sprintf(str_buf, "Micro benchmarking for one big file RW (%d bytes blk)\nOpn/Seq Wrt | Seq Read | Ran Read | Ran Wrt | Del\n", block_size);
+	ret = write(fd, str_buf, str_len);
+	if(ret != str_len){
+		perror("Failed to write log file\n");
+		exit(1);
+	}
+	
+	for(int i=0;i<count;i++){
+		str_len = sprintf(str_buf, "%ld.%09ld\t%ld.%09ld\t%ld.%09ld\t%ld.%09ld\t%ld.%09ld\n", 
+			elapse_time_ary[0][0][i], elapse_time_ary[0][1][i],
+			elapse_time_ary[1][0][i], elapse_time_ary[1][1][i],
+			elapse_time_ary[2][0][i], elapse_time_ary[2][1][i],
+			elapse_time_ary[3][0][i], elapse_time_ary[3][1][i],
+			elapse_time_ary[4][0][i], elapse_time_ary[4][1][i]
+			);
+		ret = write(fd, str_buf, str_len);
+		if(ret != str_len){
+			perror("Failed to write log file\n");
+			exit(1);
+		}
+	}
+
+	close(fd);
+
 	free(rand_seq);
+
+	for (int i=0;i<5;i++){
+		free(elapse_time_ary[i][0]);
+		free(elapse_time_ary[i][1]);
+	}
+
 }
